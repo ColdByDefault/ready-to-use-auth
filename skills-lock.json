@@ -1,0 +1,25 @@
+{
+  "version": 1,
+  "skills": {
+    "better-auth-best-practices": {
+      "source": "better-auth/skills",
+      "sourceType": "github",
+      "computedHash": "ae9bd37665a525bdb056ff6f27afc0f9c7c75809e3e23ed85c0d398dd10f6a96"
+    },
+    "better-auth-security-best-practices": {
+      "source": "better-auth/skills",
+      "sourceType": "github",
+      "computedHash": "e5638986061f867be57482cfc863ae7598d695224146b03eac6abb1c3b6c6d2a"
+    },
+    "email-and-password-best-practices": {
+      "source": "better-auth/skills",
+      "sourceType": "github",
+      "computedHash": "7380d0bcb68bfa28639bb1b7ca27f3eca1857899b885c66a7004070ec0640e50"
+    },
+    "organization-best-practices": {
+      "source": "better-auth/skills",
+      "sourceType": "github",
+      "computedHash": "dc08ccb8c3a5c468437894aea27731c06ca655553a39b5dffd67d0e429a70c6b"
+    }
+  }
+}
