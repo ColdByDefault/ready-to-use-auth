@@ -45,7 +45,7 @@ function FormField({
   onChange,
 }: FieldProps) {
   return (
-    <div className="flex flex-col gap-1.5">
+    <div className="flex flex-col gap-1.5" suppressHydrationWarning>
       <div className="flex items-center justify-between">
         <Label htmlFor={id}>{label}</Label>
         {rightSlot}
@@ -60,6 +60,7 @@ function FormField({
         aria-invalid={!!error}
         aria-describedby={error ? `${id}-error` : undefined}
         onChange={(e) => onChange(e.target.value)}
+        suppressHydrationWarning
       />
       {error && (
         <p id={`${id}-error`} className="text-destructive text-xs leading-snug">
