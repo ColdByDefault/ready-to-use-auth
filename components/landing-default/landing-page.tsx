@@ -105,9 +105,10 @@ export function LandingPage() {
             <span className="text-muted-foreground">on day one.</span>
           </h1>
           <p className="text-muted-foreground mx-auto max-w-xl text-base leading-relaxed sm:text-lg">
-            A production-ready Next.js 16 authentication template. Drop it into
-            any project and get email &amp; OAuth sign-in working in minutes.
-            Every layer is customizable.
+            A production-ready Next.js 16 authentication starter. Clone it,
+            configure your DB and providers, and have a fully working auth layer
+            in minutes — then build your app on top. Every layer is
+            customizable.
           </p>
         </div>
 

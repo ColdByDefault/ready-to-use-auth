@@ -1,8 +1,8 @@
 # ready-to-use-auth
 
-A production-ready Next.js 16 authentication template powered by [Better Auth](https://www.better-auth.com/).
+A production-ready Next.js 16 authentication starter powered by [Better Auth](https://www.better-auth.com/).
 
-Drop it into any project and get email/password + OAuth sign-in/sign-up working in minutes. Every part is customizable — database adapter, OAuth providers, UI shell, and redirect paths — without touching auth logic.
+Clone it, configure your DB and providers, and have a fully working auth layer in minutes — then build your app on top. Every part is customizable — database adapter, OAuth providers, UI shell, and redirect paths — without touching auth logic.
 
 **Stack:** Next.js 16 App Router · Better Auth ^1.2 · shadcn/ui · Tailwind CSS v4 · TypeScript (strict, zero `any`)
 
