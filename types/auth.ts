@@ -61,7 +61,7 @@ export interface SignInFormValues {
 
 export interface AuthError {
   message: string;
-  code?: string;
+  code?: string | undefined;
 }
 
 // ---------------------------------------------------------------------------

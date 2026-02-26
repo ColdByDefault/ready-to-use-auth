@@ -24,7 +24,7 @@ interface FieldProps {
   type?: React.HTMLInputTypeAttribute;
   placeholder?: string;
   value: string;
-  error?: string;
+  error?: string | undefined;
   disabled?: boolean;
   autoComplete?: string;
   onChange: (value: string) => void;

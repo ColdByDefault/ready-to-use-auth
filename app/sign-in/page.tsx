@@ -22,7 +22,7 @@ export default function SignInPage() {
   return (
     <main className="flex min-h-screen flex-col items-center justify-center px-4 py-12">
       <div className="w-full max-w-md">
-        {/* Logo */}
+        {/* add Logo here */}
         <Link
           href="/"
           className="mb-8 flex items-center justify-center gap-2 text-sm font-medium"
