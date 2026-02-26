@@ -375,6 +375,36 @@ export function ThemeToggle() {
 
 ---
 
+### 9. Landing Page
+
+The default landing page lives entirely in `components/landing-default/`. The root route (`app/page.tsx`) is a thin wrapper that just imports it — making it trivial to replace.
+
+**To remove or replace the default landing page:**
+
+```tsx
+// app/page.tsx
+// 1. Delete the `components/landing-default/` folder (optional).
+// 2. Replace the import with your own component:
+import { MyLandingPage } from "@/components/my-landing";
+
+export default function HomePage() {
+  return <MyLandingPage />;
+}
+```
+
+**Version badge** (`components/landing-default/version-badge.tsx`) reads the version dynamically from `package.json` at build time — no manual updates needed. You can use it independently anywhere:
+
+```tsx
+import { VersionBadge } from "@/components/landing-default";
+
+// Renders: ● v0.5.0
+<VersionBadge />;
+```
+
+To disable only the version badge while keeping the rest of the landing page, remove the `<VersionBadge />` line from `components/landing-default/landing-page.tsx`.
+
+---
+
 ## Reading the Session
 
 **Client component:**
