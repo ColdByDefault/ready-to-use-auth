@@ -1,201 +1,140 @@
-# Better Auth Components
+# ready-to-use-auth
 
-Fully customisable, type-safe authentication UI components built on top of
-[Better Auth](https://www.better-auth.com/), Next.js 16 App Router, shadcn/ui,
-and Tailwind CSS v4. UI and business logic are strictly separated -- swap out
-the form shell without touching a single line of auth code, or change providers
-in one place and have every page update automatically.
+A production-ready Next.js 16 authentication template powered by [Better Auth](https://www.better-auth.com/).
+
+Drop it into any project and get email/password + OAuth sign-in/sign-up working in minutes. Every part is customizable — database adapter, OAuth providers, UI shell, and redirect paths — without touching auth logic.
+
+**Stack:** Next.js 16 App Router · Better Auth ^1.2 · shadcn/ui · Tailwind CSS v4 · TypeScript (strict, zero `any`)
 
 ---
 
-## File Structure
+## Project Structure
 
 ```
-.
-├── app/
-│   ├── page.tsx                          # Landing -- Sign In / Sign Up buttons
-│   ├── sign-in/page.tsx                  # Sign-in route (RSC wrapper)
-│   ├── sign-up/page.tsx                  # Sign-up route (RSC wrapper)
-│   └── api/auth/[...all]/route.ts        # Better Auth catch-all handler
-│
-├── components/auth/
-│   ├── providers.ts                      # All 10 providers -- flip `enabled`
-│   ├── microsoft-icon.tsx                # Inline SVG (drop-in for react-icons)
-│   │
-│   ├── sign-in/
-│   │   ├── sign-in-form.tsx              # Pure UI -- zero logic, only props
-│   │   ├── sign-in-logic.tsx             # Controller -- auth calls, state
-│   │   └── index.ts                      # Re-exports as `SignIn`
-│   │
-│   └── sign-up/
-│       ├── sign-up-form.tsx              # Pure UI -- zero logic, only props
-│       ├── sign-up-logic.tsx             # Controller -- auth calls, state
-│       └── index.ts                      # Re-exports as `SignUp`
-│
-├── lib/
-│   ├── auth.ts                           # Server-side Better Auth instance
-│   ├── auth-client.ts                    # Client-side auth client
-│   └── db.ts                             # DB client — pick your adapter (Options 1-8)
-│
-├── types/
-│   └── auth.ts                           # All shared types (zero `any`)
-│
-├── .env.example                          # Template with links to dev consoles
-└── README.md
+app/
+  page.tsx                     # Landing page
+  sign-in/page.tsx             # Sign-in route — RSC wrapper
+  sign-up/page.tsx             # Sign-up route — RSC wrapper
+  dashboard/page.tsx           # Protected page example
+  api/auth/[...all]/route.ts   # Better Auth catch-all handler
+
+components/auth/
+  providers.ts                 # All 10 OAuth providers — flip `enabled` to toggle
+  microsoft-icon.tsx           # Custom SVG icon (template for new providers)
+  sign-in/
+    sign-in-form.tsx           # Pure UI — zero logic, receives typed props only
+    sign-in-logic.tsx          # Controller — state, validation, auth calls
+    index.ts                   # Re-exports as <SignIn>
+  sign-up/
+    sign-up-form.tsx           # Pure UI
+    sign-up-logic.tsx          # Controller
+    index.ts                   # Re-exports as <SignUp>
+
+lib/
+  auth.ts                      # Server-side Better Auth instance
+  auth-client.ts               # Client-side auth client
+  db.ts                        # Database connection — 8 options, pick one
+
+types/
+  auth.ts                      # All shared types
 ```
 
 ---
 
-## Getting Started
-
-### 1. Install dependencies
+## Quick Start
 
 ```bash
+# 1. Install
 pnpm install
-```
 
-### 2. Configure environment variables
-
-```bash
+# 2. Copy env template
 cp .env.example .env.local
-```
 
-At minimum you need:
+# 3. Fill in .env.local — minimum required:
+#    BETTER_AUTH_SECRET=<run: openssl rand -base64 32>
+#    NEXT_PUBLIC_APP_URL=http://localhost:3000
+#    DATABASE_URL=<your connection string>
 
-| Variable              | Description                                    |
-| --------------------- | ---------------------------------------------- |
-| `BETTER_AUTH_SECRET`  | Random secret -- run `openssl rand -base64 32` |
-| `NEXT_PUBLIC_APP_URL` | Base URL, e.g. `http://localhost:3000`         |
+# 4. Generate schema + run migrations (default: Prisma + PostgreSQL)
+npx @better-auth/cli@latest generate
+npx prisma migrate dev
 
-Then add `CLIENT_ID` / `CLIENT_SECRET` pairs for every provider you enable.
-See `.env.example` for direct links to each developer console.
-
-### 3. Configure your database
-
-Two files work together — keep the **same numbered option** active in both:
-
-| File          | What to change                               |
-| ------------- | -------------------------------------------- |
-| `lib/db.ts`   | Uncomment the client setup block for your DB |
-| `lib/auth.ts` | Uncomment the matching `database:` line      |
-
-**Default (PostgreSQL + Prisma, already active):**
-
-```
-lib/db.ts    → Option 1 block is active
-lib/auth.ts  → database: prismaAdapter(prisma, { provider: "postgresql" })
-```
-
-**Available options:**
-
-| #   | Adapter         | Engine                       | Migration command                                   |
-| --- | --------------- | ---------------------------- | --------------------------------------------------- |
-| 1   | Prisma          | PostgreSQL (default)         | `@better-auth/cli generate` → `prisma migrate dev`  |
-| 2   | Prisma          | MySQL / SQLite / CockroachDB | `@better-auth/cli generate` → `prisma migrate dev`  |
-| 3   | Drizzle ORM     | pg / MySQL / SQLite          | `@better-auth/cli generate` → `drizzle-kit migrate` |
-| 4   | MongoDB         | MongoDB                      | none (schema-less)                                  |
-| 5   | Direct (Kysely) | PostgreSQL                   | `@better-auth/cli migrate`                          |
-| 6   | Direct (Kysely) | MySQL                        | `@better-auth/cli migrate`                          |
-| 7   | Direct (Kysely) | SQLite / better-sqlite3      | `@better-auth/cli migrate`                          |
-| 8   | Direct (Kysely) | Bun SQLite                   | `@better-auth/cli migrate`                          |
-
-Each option includes its required packages and migration steps as comments
-directly in `lib/db.ts`. See [Better Auth database docs](https://www.better-auth.com/docs/concepts/database) for full details.
-
-### 4. Start the dev server
-
-```bash
+# 5. Start
 pnpm dev
 ```
 
-Visit `http://localhost:3000` -- you'll see the landing page with Sign In and
-Sign Up buttons.
+Visit `http://localhost:3000` — landing page with Sign In / Create Account buttons.
 
 ---
 
-## Architecture -- UI vs Logic Separation
+## How It Works
 
 Every auth form is split into two files:
 
-| Layer     | File               | Responsibility                                                                                                 |
-| --------- | ------------------ | -------------------------------------------------------------------------------------------------------------- |
-| **UI**    | `sign-*-form.tsx`  | Pure presentational. Receives typed props and callbacks. Zero auth logic, zero `useRouter`, zero `authClient`. |
-| **Logic** | `sign-*-logic.tsx` | `"use client"`. Holds React state, zod validation, `authClient` calls. Passes everything down to UI.           |
+| Layer     | File               | Responsibility                                                                      |
+| --------- | ------------------ | ----------------------------------------------------------------------------------- |
+| **UI**    | `sign-*-form.tsx`  | Pure presentational. Receives typed props. Zero auth logic, zero router calls.      |
+| **Logic** | `sign-*-logic.tsx` | `"use client"`. State, zod validation, `authClient` calls. Passes everything to UI. |
 
-```
-┌──────────────────────────────────────────┐
-│  app/sign-in/page.tsx  (RSC wrapper)     │
-│                                          │
-│   ┌──────────────────────────────────┐   │
-│   │  SignInLogic  ("use client")     │   │
-│   │  - form state (React.useState)   │   │
-│   │  - zod validation                │   │
-│   │  - authClient.signIn.email()     │   │
-│   │  - authClient.signIn.social()    │   │
-│   │                                  │   │
-│   │   ┌──────────────────────────┐   │   │
-│   │   │  SignInFormUI            │   │   │
-│   │   │  - Input fields          │   │   │
-│   │   │  - Provider buttons      │   │   │
-│   │   │  - Error display         │   │   │
-│   │   │  - Loading states        │   │   │
-│   │   │  (pure props, no logic)  │   │   │
-│   │   └──────────────────────────┘   │   │
-│   └──────────────────────────────────┘   │
-└──────────────────────────────────────────┘
-```
-
-This means you can:
-
-- Replace the **entire UI** without touching auth logic
-- Reuse the **same logic** with a completely different design
-- Test the **UI in isolation** by passing mock props
-- Test the **logic in isolation** without rendering any UI
+This means you can replace the entire UI without touching auth logic, or reuse the same logic with a completely different design.
 
 ---
 
-## Customization Guide
+## Customization
 
-### 1. Toggle Providers On/Off
+### 1. Database
 
-All 10 providers live in `components/auth/providers.ts`. Each has an `enabled`
-boolean:
+Two files work together — keep the **same numbered option** active in both:
+
+| #   | Adapter       | Engine                       | Migration                                           |
+| --- | ------------- | ---------------------------- | --------------------------------------------------- |
+| 1   | Prisma        | PostgreSQL _(default)_       | `@better-auth/cli generate` → `prisma migrate dev`  |
+| 2   | Prisma        | MySQL / SQLite / CockroachDB | same                                                |
+| 3   | Drizzle ORM   | pg / MySQL / SQLite          | `@better-auth/cli generate` → `drizzle-kit migrate` |
+| 4   | MongoDB       | MongoDB                      | none (schema-less)                                  |
+| 5   | Kysely direct | PostgreSQL                   | `@better-auth/cli migrate`                          |
+| 6   | Kysely direct | MySQL                        | `@better-auth/cli migrate`                          |
+| 7   | Kysely direct | SQLite                       | `@better-auth/cli migrate`                          |
+| 8   | Kysely direct | Bun SQLite                   | `@better-auth/cli migrate`                          |
+
+Each option is fully documented as comments in `lib/db.ts` and `lib/auth.ts`. Change one block in each file and run the migration.
+
+---
+
+### 2. Toggle Providers On/Off
+
+All 10 providers live in `components/auth/providers.ts`. Each has an `enabled` boolean:
 
 ```ts
-// components/auth/providers.ts
-
-// To enable Discord, just flip the flag:
 {
   id: "discord",
   label: "Discord",
   icon: SiDiscord,
   brandColor: "#5865F2",
-  enabled: true,   // <-- was false
+  enabled: true, // flip to show in UI
 }
 ```
 
-Set the matching `DISCORD_CLIENT_ID` / `DISCORD_CLIENT_SECRET` env vars and
-you're done. Every page that renders `<SignIn>` or `<SignUp>` picks up the
-change automatically.
+Then add env vars and register the redirect URI — that's it. Every page using `<SignIn>` or `<SignUp>` picks up the change automatically.
 
-**Available providers (all 10):**
+**All 10 providers:**
 
-| Provider    | id          | Default  |
-| ----------- | ----------- | -------- |
-| Google      | `google`    | enabled  |
-| GitHub      | `github`    | enabled  |
-| Microsoft   | `microsoft` | enabled  |
-| Apple       | `apple`     | enabled  |
-| Facebook    | `facebook`  | enabled  |
-| LinkedIn    | `linkedin`  | enabled  |
-| Discord     | `discord`   | disabled |
-| Twitter / X | `twitter`   | disabled |
-| Twitch      | `twitch`    | disabled |
-| Spotify     | `spotify`   | disabled |
+| Provider    | id          | Default    |
+| ----------- | ----------- | ---------- |
+| Google      | `google`    | ✅ enabled |
+| GitHub      | `github`    | ✅ enabled |
+| Microsoft   | `microsoft` | ✅ enabled |
+| Apple       | `apple`     | ✅ enabled |
+| Facebook    | `facebook`  | ✅ enabled |
+| LinkedIn    | `linkedin`  | ✅ enabled |
+| Discord     | `discord`   | disabled   |
+| Twitter / X | `twitter`   | disabled   |
+| Twitch      | `twitch`    | disabled   |
+| Spotify     | `spotify`   | disabled   |
 
 ---
 
-### 2. Override Providers Per-Page
+### 3. Override Providers Per-Page
 
 Both `<SignIn>` and `<SignUp>` accept an optional `providerOverrides` prop that
 lets you show/hide or rename providers for that specific page only -- without
@@ -223,13 +162,11 @@ export default function SignInPage() {
 }
 ```
 
-`providerOverrides` is typed as
-`Partial<Record<SocialProvider, { enabled?: boolean; label?: string }>>`, so
-you only specify what you want to change.
+`providerOverrides` is typed as `Partial<Record<SocialProvider, { enabled?: boolean; label?: string }>>` — specify only what you want to change.
 
 ---
 
-### 3. Change Redirect Paths
+### 4. Change Redirect Paths
 
 Both components accept a `callbackConfig` prop to override where users go after
 auth:
@@ -263,114 +200,58 @@ auth:
 
 ---
 
-### 4. Custom Headings and Copy
+### 5. Page Layout and Copy
 
-The sign-up/sign-in pages (`app/sign-up/page.tsx`, `app/sign-in/page.tsx`) are
-plain React Server Components. To change headings, descriptions, or footer
-text, edit the page file directly -- the card wrapper lives there:
-
-```tsx
-// app/sign-up/page.tsx
-export default function SignUpPage() {
-  return (
-    <main className="flex min-h-svh items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader className="text-center">
-          {/* Change heading and description here */}
-          <CardTitle className="text-2xl">Join the waitlist</CardTitle>
-          <CardDescription>
-            Create your account to get early access.
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <SignUp />
-        </CardContent>
-        <CardFooter className="justify-center">
-          {/* Change footer link text here */}
-          <p className="text-muted-foreground text-sm">
-            Already on the list?{" "}
-            <Link
-              href="/sign-in"
-              className="text-foreground font-medium hover:underline"
-            >
-              Sign in here
-            </Link>
-          </p>
-        </CardFooter>
-      </Card>
-    </main>
-  );
-}
-```
+`app/sign-in/page.tsx` and `app/sign-up/page.tsx` are plain RSCs — edit headings, descriptions, and footer links directly there. They are intentionally minimal.
 
 ---
 
-### 5. Add a Brand-New Provider Icon
+### 6. Add a Custom Provider Icon
 
 Create any component that satisfies `AuthIconComponent` (a
 `React.ComponentType<IconProps>` -- receives `size`, `className`, `style`).
 
-A ready-to-edit template is already at `components/auth/custom-icon.tsx`:
+A ready-made template is at `components/auth/microsoft-icon.tsx`. Copy it, rename it, paste your SVG paths:
 
 ```tsx
-// components/auth/custom-icon.tsx
+// components/auth/my-icon.tsx
 import type { IconProps } from "@/types/auth";
 
-export function CustomIcon({ size = 16, className, style }: IconProps) {
+export function MyIcon({ size = 16, className, style }: IconProps) {
   return (
     <svg
-      xmlns="http://www.w3.org/2000/svg"
       width={size}
       height={size}
       viewBox="0 0 24 24"
-      fill="currentColor"
       className={className}
       style={style}
       aria-hidden="true"
     >
-      {/* Replace with your SVG path(s) */}
-      <path d="M12 0 L24 24 L0 24 Z" />
+      <path d="..." />
     </svg>
   );
 }
 ```
 
-Rename the file and the component to match your provider, then add it to
-the `PROVIDERS` array in `components/auth/providers.ts`:
+Register it in `providers.ts`:
 
 ```ts
-import { CustomIcon } from "@/components/auth/custom-icon"
+import { MyIcon } from "@/components/auth/my-icon";
 
-// Add to the PROVIDERS array:
-{
-  id: "spotify",      // must match a SocialProvider union member
-  label: "Spotify",
-  icon: CustomIcon,
-  brandColor: "#1DB954",
-  enabled: true,
-}
+{ id: "spotify", label: "Spotify", icon: MyIcon, brandColor: "#1DB954", enabled: true }
 ```
 
-To add an entirely new provider ID, also extend the `SocialProvider` union in
-`types/auth.ts`:
-
-```ts
-export type SocialProvider =
-  | "google"
-  | "github"
-  // ...
-  | "my-new-provider"; // <-- add here
-```
-
-And register it in `lib/auth.ts` under `socialProviders`.
+If the provider ID doesn't exist in the `SocialProvider` union yet, add it to `types/auth.ts` and register the server-side config in `lib/auth.ts` under `socialProviders`.
 
 ---
 
-### 6. Swap the Entire UI Shell
+### 7. Swap the Entire UI Shell
 
-The UI components (`sign-in-form.tsx`, `sign-up-form.tsx`) are **pure
-presentational** -- they only receive typed props and fire typed callbacks.
-The full prop interfaces are:
+The UI components (`sign-in-form.tsx`, `sign-up-form.tsx`) are **purely presentational** — they only receive typed props and fire typed callbacks.
+
+To replace the UI entirely: create a new component that accepts the same prop interface, then update one import line in the logic file.
+
+**Prop interfaces:**
 
 **`SignUpFormProps`:**
 
@@ -407,29 +288,18 @@ interface SignInFormProps {
 }
 ```
 
-**To swap the UI:**
-
-1. Create your new form component (e.g. `my-sign-in-form.tsx`) that accepts
-   `SignInFormProps`
-2. Change one import in the logic file:
+**Swap in one line:**
 
 ```tsx
 // components/auth/sign-in/sign-in-logic.tsx
-
-// Before:
-import { SignInFormUI } from "./sign-in-form";
-
-// After:
-import { SignInFormUI } from "./my-sign-in-form";
+import { SignInFormUI } from "./my-sign-in-form"; // ← change this import
 ```
 
-That's it. Your new UI gets all the same state, validation, loading states,
-and auth calls for free.
+Your new UI inherits all state, validation, loading states, and auth calls automatically.
 
-**Example minimal custom UI:**
+**Minimal example:**
 
 ```tsx
-// components/auth/sign-in/my-sign-in-form.tsx
 import type { SignInFormProps } from "@/types/auth";
 
 export function SignInFormUI({
@@ -449,24 +319,17 @@ export function SignInFormUI({
         type="email"
         value={values.email}
         onChange={(e) => onFieldChange("email", e.target.value)}
-        placeholder="Email"
       />
       {fieldErrors.email && <span>{fieldErrors.email}</span>}
-
       <input
         type="password"
         value={values.password}
         onChange={(e) => onFieldChange("password", e.target.value)}
-        placeholder="Password"
       />
-      {fieldErrors.password && <span>{fieldErrors.password}</span>}
-
       {authError && <div role="alert">{authError.message}</div>}
-
       <button type="submit" disabled={isLoading}>
         {isLoading ? "Signing in..." : "Sign in"}
       </button>
-
       {providers
         .filter((p) => p.enabled)
         .map((p) => (
@@ -476,8 +339,7 @@ export function SignInFormUI({
             disabled={socialLoadingProvider !== null}
             onClick={() => onSocialSignIn(p.id)}
           >
-            <p.icon size={16} style={{ color: p.brandColor }} />
-            {p.label}
+            <p.icon size={16} style={{ color: p.brandColor }} /> {p.label}
           </button>
         ))}
     </form>
@@ -487,68 +349,58 @@ export function SignInFormUI({
 
 ---
 
-### 7. Dark Mode
+### 8. Dark Mode
 
-Dark mode is already wired. The `ThemeProvider` in `app/layout.tsx` uses
-`next-themes` with `attribute="class"`. All components use Tailwind `dark:`
-variants.
+Dark mode is active out of the box via `next-themes`. The `ThemeProvider` in `app/layout.tsx` uses `attribute="class"`. All components use Tailwind `dark:` variants. System theme is used by default.
 
-**Adding a theme toggle button:**
+Add a toggle anywhere:
 
 ```tsx
 "use client";
 import { useTheme } from "next-themes";
-import { Button } from "@/components/ui/button";
-import { Moon, Sun } from "lucide-react";
 
 export function ThemeToggle() {
   const { theme, setTheme } = useTheme();
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-      aria-label="Toggle theme"
-    >
-      <Sun className="size-4 dark:hidden" />
-      <Moon className="hidden size-4 dark:block" />
-    </Button>
+    <button onClick={() => setTheme(theme === "dark" ? "light" : "dark")}>
+      Toggle
+    </button>
   );
 }
 ```
-
-The system theme is used by default. No changes needed to any auth component.
 
 ---
 
 ## Reading the Session
 
-### Client components
+**Client component:**
 
 ```tsx
 "use client";
 import { authClient } from "@/lib/auth-client";
 
-export function UserAvatar() {
+export function UserBadge() {
   const { data: session } = authClient.useSession();
   if (!session) return null;
-  return <img src={session.user.image ?? ""} alt={session.user.name} />;
+  return <span>{session.user.name}</span>;
 }
 ```
 
-### Server components
+**Server component (recommended for protected pages):**
 
 ```ts
-import { auth } from "@/lib/auth"
-import { headers } from "next/headers"
-import { redirect } from "next/navigation"
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 
-export default async function DashboardPage() {
-  const session = await auth.api.getSession({ headers: await headers() })
-  if (!session) redirect("/sign-in")
-  return <p>Hello, {session.user.name}</p>
+export default async function ProtectedPage() {
+  const session = await auth.api.getSession({ headers: await headers() });
+  if (!session) redirect("/sign-in");
+  return <p>Hello, {session.user.name}</p>;
 }
 ```
+
+> **Tip:** prefer server-side session checks for protected pages — they avoid the redirect flash that client-side `useEffect` guards produce. For protecting multiple routes at once, add a `middleware.ts` at the project root.
 
 ---
 
@@ -595,13 +447,7 @@ http://localhost:3000/api/auth/callback/linkedin
 
 ---
 
-## Tech Stack
+## Known Issues
 
-| Layer      | Package                                          |
-| ---------- | ------------------------------------------------ |
-| Auth       | [better-auth](https://www.better-auth.com/) ^1.2 |
-| Framework  | Next.js 16 App Router                            |
-| UI         | shadcn/ui + Tailwind CSS v4                      |
-| Icons      | react-icons/si (Simple Icons) + custom SVGs      |
-| Validation | zod                                              |
-| Types      | TypeScript -- strict, zero `any`                 |
+- `zod` is used in both logic files but is not listed in `package.json`. It works as a transitive dep but should be declared explicitly: `pnpm add zod`
+- `app/dashboard/page.tsx` uses a client-side `useEffect` guard. For production replace it with the server-side session check shown above, or add `middleware.ts` for route-level protection across all protected routes

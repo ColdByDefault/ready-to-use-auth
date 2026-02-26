@@ -11,7 +11,6 @@ export const metadata: Metadata = {
   title: "Auth — Better Auth Components",
   description:
     "Fully customizable, type-safe authentication components powered by Better Auth.",
-  generator: "v0.app",
   icons: {
     icon: [
       {
