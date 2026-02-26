@@ -1,6 +1,7 @@
 import Link from "next/link";
 import {
   ArrowRight,
+  BookOpen,
   Database,
   Layers,
   Moon,
@@ -97,18 +98,14 @@ export function LandingPage() {
           </p>
         </div>
 
-        {/* CTAs */}
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Button asChild size="lg" className="gap-2 px-8">
-            <Link href="/sign-in">
-              Sign in
-              <ArrowRight className="size-4" />
-            </Link>
-          </Button>
-          <Button asChild variant="outline" size="lg" className="px-8">
-            <Link href="/sign-up">Create account</Link>
-          </Button>
-        </div>
+        {/* CTA */}
+        <Button asChild size="lg" className="gap-2 px-8">
+          <Link href="/docs">
+            <BookOpen className="size-4" />
+            Get Started
+            <ArrowRight className="size-4" />
+          </Link>
+        </Button>
 
         {/* ── Features grid ─────────────────────────────────────────────── */}
         <div className="mt-8 grid w-full gap-3 text-left sm:grid-cols-2 lg:grid-cols-3">
