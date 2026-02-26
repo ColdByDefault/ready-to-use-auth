@@ -16,6 +16,11 @@ import type {
 
 // ---------------------------------------------------------------------------
 // Sub-components — purely presentational, zero side effects
+//
+// OPTIMIZE: `FormField` and `ProviderButton` are defined in this file for
+// co-location convenience. If you reuse them in sign-in or other forms,
+// extract them to e.g. `components/auth/shared/form-field.tsx` and
+// `components/auth/shared/provider-button.tsx`.
 // ---------------------------------------------------------------------------
 
 interface FieldProps {
@@ -113,12 +118,17 @@ export function SignUpFormUI({
   onSocialSignIn,
   socialLoadingProvider,
 }: SignUpFormProps) {
+  // OPTIMIZE: Wrap these in `useMemo` if the providers array is large or the
+  // parent re-renders frequently, to avoid recomputing on every render.
   const enabledProviders = providers.filter((p) => p.enabled);
   const isAnyLoading = isLoading || socialLoadingProvider !== null;
 
   return (
     <div className="flex w-full flex-col gap-6">
       {/* Header */}
+      {/* OPTIMIZE: "Create an account" and the subtitle are hardcoded. Accept a
+          `labels` prop (e.g. `labels.title`, `labels.subtitle`) so consumers
+          can customise copy without editing this file. */}
       <div className="flex flex-col gap-1 text-center">
         <h1 className="text-balance text-2xl font-semibold tracking-tight">
           Create an account
@@ -189,6 +199,8 @@ export function SignUpFormUI({
           aria-busy={isLoading}
         >
           {isLoading && <Loader2 className="size-4 animate-spin" />}
+          {/* OPTIMIZE: Button labels are hardcoded. Accept `labels.submitIdle`
+              and `labels.submitLoading` props to support i18n or rebranding. */}
           {isLoading ? "Creating account…" : "Create account"}
         </Button>
       </form>
@@ -196,6 +208,8 @@ export function SignUpFormUI({
       {/* Divider */}
       {enabledProviders.length > 0 && (
         <>
+          {/* OPTIMIZE: "Or continue with" is hardcoded. Move it to a
+              `labels.divider` prop for i18n / custom copy. */}
           <div className="flex items-center gap-3">
             <Separator className="flex-1" />
             <span className="text-muted-foreground text-xs font-medium uppercase tracking-widest">
@@ -205,6 +219,9 @@ export function SignUpFormUI({
           </div>
 
           {/* Provider grid: 2 cols on ≥2 providers, 1 col otherwise */}
+          {/* OPTIMIZE: The 2-column threshold is hardcoded. Accept a
+              `providerGridCols` prop (1 | 2) to let consumers control layout
+              regardless of how many providers are enabled. */}
           <div
             className={cn(
               "grid gap-2",
@@ -225,6 +242,9 @@ export function SignUpFormUI({
       )}
 
       {/* Sign-in link */}
+      {/* OPTIMIZE: The sign-in href `/sign-in` and surrounding copy are
+          hardcoded. Accept a `signInHref` prop and include the text in
+          `labels` so this component can be dropped into any route structure. */}
       <p className="text-muted-foreground text-center text-sm leading-relaxed">
         Already have an account?{" "}
         <Link

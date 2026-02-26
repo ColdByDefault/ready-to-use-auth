@@ -1,6 +1,5 @@
 import Link from "next/link";
 import {
-  ShieldCheck,
   ArrowRight,
   Database,
   Layers,
@@ -10,7 +9,6 @@ import {
   Users,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { VersionBadge } from "./version-badge";
 
 const FEATURES = [
   {
@@ -57,11 +55,11 @@ export function LandingPage() {
       {/* Subtle dot-grid background */}
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 -z-10"
+        className="pointer-events-none absolute inset-0 z-10"
         style={{
           backgroundImage:
-            "radial-gradient(oklch(0.5 0 0 / 0.12) 1px, transparent 1px)",
-          backgroundSize: "24px 24px",
+            "radial-gradient(rgba(255,255,255, 0.1) 1.5px, transparent 1.5px)",
+          backgroundSize: "40px 40px",
         }}
       />
       {/* Top fade */}
@@ -70,21 +68,8 @@ export function LandingPage() {
         className="from-background pointer-events-none absolute inset-x-0 top-0 -z-10 h-40 bg-linear-to-b to-transparent"
       />
 
-      {/* ── Nav ─────────────────────────────────────────────────────────── */}
-      <header className="flex items-center justify-between px-6 py-5 sm:px-10">
-        <div className="flex items-center gap-2">
-          <div className="bg-primary text-primary-foreground flex size-7 items-center justify-center rounded-lg">
-            <ShieldCheck className="size-4" />
-          </div>
-          <span className="text-sm font-semibold tracking-tight">
-            ready-to-use-auth
-          </span>
-        </div>
-        <VersionBadge />
-      </header>
-
       {/* ── Hero ────────────────────────────────────────────────────────── */}
-      <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center gap-8 px-4 py-24 text-center sm:px-8">
+      <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center gap-4 text-center sm:px-8 z-50">
         {/* Announcement pill */}
         <Link
           href="https://www.better-auth.com/"
@@ -145,32 +130,6 @@ export function LandingPage() {
           ))}
         </div>
       </main>
-
-      {/* ── Footer ──────────────────────────────────────────────────────── */}
-      <footer className="border-border/50 border-t px-6 py-5 sm:px-10">
-        <div className="mx-auto flex max-w-4xl flex-col items-center justify-between gap-3 sm:flex-row">
-          <p className="text-muted-foreground text-xs">
-            Built by{" "}
-            <Link
-              href="https://github.com/ColdByDefault"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hover:text-foreground underline underline-offset-4 transition-colors"
-            >
-              ColdByDefault© {new Date().getFullYear()}
-            </Link>{" "}
-            · <span className="text-gray-300 font-bold">MIT License</span>
-          </p>
-          <Link
-            href="https://github.com/ColdByDefault/ready-to-use-auth"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-muted-foreground hover:text-foreground text-xs underline underline-offset-4 transition-colors"
-          >
-            View on GitHub
-          </Link>
-        </div>
-      </footer>
     </div>
   );
 }
