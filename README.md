@@ -11,16 +11,20 @@ Drop it into any project and get email/password + OAuth sign-in/sign-up working 
 ## Project Structure
 
 ```
+proxy.ts                       # Route protection — replaces middleware.ts in Next.js 16+
+
 app/
   page.tsx                     # Landing page
   sign-in/page.tsx             # Sign-in route — RSC wrapper
   sign-up/page.tsx             # Sign-up route — RSC wrapper
-  dashboard/page.tsx           # Protected page example
+  dashboard/
+    page.tsx                   # Protected page — RSC with server-side session check
   api/auth/[...all]/route.ts   # Better Auth catch-all handler
 
 components/auth/
   providers.ts                 # All 10 OAuth providers — flip `enabled` to toggle
   microsoft-icon.tsx           # Custom SVG icon (template for new providers)
+  sign-out-button.tsx          # Client component — only piece that needs the browser
   sign-in/
     sign-in-form.tsx           # Pure UI — zero logic, receives typed props only
     sign-in-logic.tsx          # Controller — state, validation, auth calls
@@ -400,7 +404,7 @@ export default async function ProtectedPage() {
 }
 ```
 
-> **Tip:** prefer server-side session checks for protected pages — they avoid the redirect flash that client-side `useEffect` guards produce. For protecting multiple routes at once, add a `middleware.ts` at the project root.
+> **Tip:** prefer server-side session checks for protected pages — they avoid the redirect flash that client-side `useEffect` guards produce. For protecting multiple routes at once, use `proxy.ts` at the project root (Next.js 16+ replaces `middleware.ts` with `proxy.ts`).
 
 ---
 
@@ -444,10 +448,3 @@ http://localhost:3000/api/auth/callback/apple
 http://localhost:3000/api/auth/callback/facebook
 http://localhost:3000/api/auth/callback/linkedin
 ```
-
----
-
-## Known Issues
-
-- `zod` is used in both logic files but is not listed in `package.json`. It works as a transitive dep but should be declared explicitly: `pnpm add zod`
-- `app/dashboard/page.tsx` uses a client-side `useEffect` guard. For production replace it with the server-side session check shown above, or add `middleware.ts` for route-level protection across all protected routes
