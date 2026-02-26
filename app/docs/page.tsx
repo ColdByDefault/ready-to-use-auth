@@ -296,6 +296,49 @@ pnpm dev`}</Pre>
           the migration.
         </P>
 
+        <Note>
+          <strong className="text-foreground">Build script:</strong> The default{" "}
+          <Code>build</Code> command in <Code>package.json</Code> is{" "}
+          <Code>&quot;prisma generate &amp;&amp; next build&quot;</Code>. This
+          is <strong className="text-foreground">Prisma-specific</strong>{" "}
+          (options 1–2). If you switch to a different adapter, update the build
+          script accordingly:
+        </Note>
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="text-left text-foreground font-semibold py-2 pr-4">
+                  Adapter
+                </th>
+                <th className="text-left text-foreground font-semibold py-2">
+                  Build script
+                </th>
+              </tr>
+            </thead>
+            <tbody className="text-muted-foreground">
+              {[
+                ["Prisma (1–2)", '"prisma generate && next build" (default)'],
+                ["Drizzle (3)", '"drizzle-kit generate && next build"'],
+                ["MongoDB (4)", '"next build"'],
+                ["Kysely (5–8)", '"next build"'],
+              ].map(([adapter, script]) => (
+                <tr key={adapter} className="border-b border-border/40">
+                  <td className="py-1.5 pr-4 font-medium text-foreground">
+                    {adapter}
+                  </td>
+                  <td className="py-1.5 font-mono text-xs">{script}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <P>
+          Prisma and Drizzle need a code-generation step before the build so the
+          ORM client is available at compile time. MongoDB and Kysely don&apos;t
+          require code generation.
+        </P>
+
         {/* 2. Providers */}
         <H3>2. Toggle Providers On/Off</H3>
         <P>
@@ -577,6 +620,152 @@ export default function HomePage() {
           version dynamically from <Code>package.json</Code> at build time — no
           manual updates needed.
         </P>
+
+        {/* 10. Demo / Showcase Mode */}
+        <H3>10. Demo / Showcase Mode</H3>
+        <P>
+          The project includes a{" "}
+          <strong className="text-foreground">demo mode</strong> that lets you
+          deploy it as a public showcase on Vercel (or anywhere){" "}
+          <strong className="text-foreground">without a database</strong>.
+          Visitors can sign in with hardcoded demo credentials and explore the
+          dashboard, but cannot create real accounts.
+        </P>
+
+        <H3>How Demo Mode Works</H3>
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="text-left text-foreground font-semibold py-2 pr-4">
+                  Component
+                </th>
+                <th className="text-left text-foreground font-semibold py-2 pr-4">
+                  Normal mode
+                </th>
+                <th className="text-left text-foreground font-semibold py-2">
+                  Demo mode
+                </th>
+              </tr>
+            </thead>
+            <tbody className="text-muted-foreground">
+              {[
+                [
+                  "Sign-in",
+                  "Better Auth + DB",
+                  "Validates against DEMO_EMAIL / DEMO_PASSWORD env vars",
+                ],
+                [
+                  "Sign-up",
+                  "Better Auth + DB",
+                  "Shows an info notice (registration disabled)",
+                ],
+                [
+                  "Dashboard",
+                  "Reads session from DB",
+                  "Reads session from a lightweight cookie",
+                ],
+                [
+                  "Social providers",
+                  "Shown",
+                  "Hidden (no DB to store OAuth accounts)",
+                ],
+                [
+                  "Middleware",
+                  "Calls auth.api.getSession",
+                  "Checks for the demo_session cookie",
+                ],
+              ].map(([component, normal, demo]) => (
+                <tr key={component} className="border-b border-border/40">
+                  <td className="py-1.5 pr-4 font-medium text-foreground">
+                    {component}
+                  </td>
+                  <td className="py-1.5 pr-4">{normal}</td>
+                  <td className="py-1.5">{demo}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <H3>Demo Environment Variables</H3>
+        <Pre>{`# Set these three on Vercel (or in .env.local for local testing)
+NEXT_PUBLIC_DEMO_MODE=true
+DEMO_EMAIL=demo@example.com
+DEMO_PASSWORD=Demo1234!`}</Pre>
+        <P>
+          <Code>DATABASE_URL</Code> and <Code>BETTER_AUTH_SECRET</Code> can be
+          left empty — they are never used at runtime in demo mode.
+        </P>
+
+        <H3>Demo Mode Files</H3>
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="text-left text-foreground font-semibold py-2 pr-4">
+                  File
+                </th>
+                <th className="text-left text-foreground font-semibold py-2">
+                  Purpose
+                </th>
+              </tr>
+            </thead>
+            <tbody className="text-muted-foreground">
+              {[
+                [
+                  "lib/demo-session.ts",
+                  "Cookie helpers + isDemoMode() / getDemoSession()",
+                ],
+                [
+                  "app/api/demo-signin/route.ts",
+                  "Validates demo creds, issues demo_session cookie",
+                ],
+                ["app/api/demo-signout/route.ts", "Clears the cookie"],
+                ["proxy.ts", "Bypasses Better Auth in demo mode"],
+                [
+                  "app/dashboard/page.tsx",
+                  "Reads cookie session instead of hitting DB",
+                ],
+                ["sign-in-logic.tsx", "POSTs to /api/demo-signin"],
+                [
+                  "sign-up-logic.tsx",
+                  "Renders showcase notice instead of form",
+                ],
+                ["sign-out-button.tsx", "Calls /api/demo-signout"],
+              ].map(([file, purpose]) => (
+                <tr key={file} className="border-b border-border/40">
+                  <td className="py-1.5 pr-4">
+                    <Code>{file}</Code>
+                  </td>
+                  <td className="py-1.5">{purpose}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+
+        <H3>Disabling Demo Mode (After Cloning)</H3>
+        <P>
+          To switch to the real Better Auth flow, just remove{" "}
+          <Code>NEXT_PUBLIC_DEMO_MODE</Code> from your environment (or set it to{" "}
+          <Code>&quot;false&quot;</Code>). Then set up your database and auth
+          secrets as described in the Quick Start section above.{" "}
+          <strong className="text-foreground">No code changes needed</strong> —
+          every component checks <Code>NEXT_PUBLIC_DEMO_MODE</Code> at runtime
+          and falls back to the normal Better Auth path automatically.
+        </P>
+        <Pre>{`# 1. Remove (or set to "false") the demo flag
+NEXT_PUBLIC_DEMO_MODE=false   # or just delete the line
+
+# 2. Set up your real auth secrets
+BETTER_AUTH_SECRET=<run: openssl rand -base64 32>
+DATABASE_URL=postgresql://user:password@host:5432/dbname
+
+# 3. Run migrations
+npx prisma migrate dev
+
+# 4. Deploy — everything uses Better Auth automatically`}</Pre>
 
         {/* Reading the Session */}
         <H2>Reading the Session</H2>

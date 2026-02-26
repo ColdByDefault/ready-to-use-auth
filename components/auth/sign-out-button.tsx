@@ -7,7 +7,13 @@ export function SignOutButton() {
   const router = useRouter();
 
   async function handleSignOut() {
-    await signOut();
+    if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
+      // Demo mode — clear the lightweight cookie session
+      await fetch("/api/demo-signout", { method: "POST" });
+    } else {
+      // Normal mode — Better Auth
+      await signOut();
+    }
     router.push("/sign-in");
   }
 

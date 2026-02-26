@@ -103,6 +103,23 @@ Two files work together — keep the **same numbered option** active in both:
 
 Each option is fully documented as comments in `lib/db.ts` and `lib/auth.ts`. Change one block in each file and run the migration.
 
+> **Build script:** The default `build` command in `package.json` is:
+>
+> ```json
+> "build": "prisma generate && next build"
+> ```
+>
+> This is **Prisma-specific** (options 1–2). If you switch to a different adapter, update the build script accordingly:
+>
+> | Adapter      | Build script                                  |
+> | ------------ | --------------------------------------------- |
+> | Prisma (1–2) | `"prisma generate && next build"` _(default)_ |
+> | Drizzle (3)  | `"drizzle-kit generate && next build"`        |
+> | MongoDB (4)  | `"next build"`                                |
+> | Kysely (5–8) | `"next build"`                                |
+>
+> Prisma and Drizzle need a code-generation step before the build so the ORM client is available at compile time. MongoDB and Kysely don't require code generation.
+
 ---
 
 ### 2. Toggle Providers On/Off
@@ -402,6 +419,50 @@ import { VersionBadge } from "@/components/landing-default";
 ```
 
 To disable only the version badge while keeping the rest of the landing page, remove the `<VersionBadge />` line from `components/landing-default/landing-page.tsx`.
+
+---
+
+### 10. Demo / Showcase Mode
+
+The project includes a **demo mode** that lets you deploy it as a public showcase on Vercel (or anywhere) **without a database**. Visitors can sign in with hardcoded demo credentials and explore the dashboard, but cannot create real accounts.
+
+#### How it works
+
+| Component               | Normal mode                 | Demo mode (`NEXT_PUBLIC_DEMO_MODE=true`)                  |
+| ----------------------- | --------------------------- | --------------------------------------------------------- |
+| Sign-in                 | Better Auth + DB            | Validates against `DEMO_EMAIL` / `DEMO_PASSWORD` env vars |
+| Sign-up                 | Better Auth + DB            | Shows an informational notice (registration disabled)     |
+| Dashboard               | Reads session from DB       | Reads session from a lightweight cookie                   |
+| Social providers        | Shown                       | Hidden (no DB to store the OAuth account)                 |
+| Middleware (`proxy.ts`) | Calls `auth.api.getSession` | Checks for the `demo_session` cookie                      |
+
+#### Environment variables
+
+```env
+# Set these three on Vercel (or in .env.local for local testing)
+NEXT_PUBLIC_DEMO_MODE=true
+DEMO_EMAIL=demo@example.com
+DEMO_PASSWORD=Demo1234!
+```
+
+`DATABASE_URL` and `BETTER_AUTH_SECRET` can be left empty — they are never used at runtime in demo mode.
+
+#### Files involved
+
+| File                                        | Purpose                                              |
+| ------------------------------------------- | ---------------------------------------------------- |
+| `lib/demo-session.ts`                       | Cookie helpers + `isDemoMode()` / `getDemoSession()` |
+| `app/api/demo-signin/route.ts`              | Validates demo creds, issues `demo_session` cookie   |
+| `app/api/demo-signout/route.ts`             | Clears the cookie                                    |
+| `proxy.ts`                                  | Bypasses Better Auth in demo mode                    |
+| `app/dashboard/page.tsx`                    | Reads cookie session instead of hitting DB           |
+| `components/auth/sign-in/sign-in-logic.tsx` | POSTs to `/api/demo-signin`                          |
+| `components/auth/sign-up/sign-up-logic.tsx` | Renders showcase notice                              |
+| `components/auth/sign-out-button.tsx`       | Calls `/api/demo-signout`                            |
+
+#### Disabling demo mode (after cloning)
+
+To switch to the real Better Auth flow, just remove `NEXT_PUBLIC_DEMO_MODE` from your environment (or set it to `"false"`). Then set up your database and auth secrets as described in [Quick Start](#quick-start). No code changes needed — every component checks `NEXT_PUBLIC_DEMO_MODE` at runtime and falls back to the normal Better Auth path automatically.
 
 ---
 

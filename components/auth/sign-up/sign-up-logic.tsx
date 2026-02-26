@@ -1,8 +1,10 @@
 "use client";
 
 import * as React from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { z } from "zod";
+import { ExternalLink, FlaskConical } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
 import { ENABLED_PROVIDERS } from "@/components/auth/providers";
@@ -177,6 +179,66 @@ export function SignUpLogic({
       });
       setSocialLoadingProvider(null);
     }
+  }
+
+  // -------------------------------------------------------------------------
+  // Demo / showcase mode — registration is disabled.
+  // -------------------------------------------------------------------------
+  if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
+    return (
+      <div className="flex w-full flex-col gap-6">
+        {/* Header */}
+        <div className="flex flex-col gap-1 text-center">
+          <h1 className="text-balance text-2xl font-semibold tracking-tight">
+            Create an account
+          </h1>
+          <p className="text-muted-foreground text-sm leading-relaxed">
+            Enter your details below to get started
+          </p>
+        </div>
+
+        {/* Showcase notice */}
+        <div className="rounded-lg border border-blue-200 bg-blue-50 p-5 dark:border-blue-800 dark:bg-blue-950">
+          <div className="flex items-start gap-3">
+            <FlaskConical className="size-5 text-blue-600 dark:text-blue-400 mt-0.5 shrink-0" />
+            <div className="flex flex-col gap-2 text-sm">
+              <p className="font-semibold text-blue-900 dark:text-blue-200">
+                This is a live showcase
+              </p>
+              <p className="text-blue-700 dark:text-blue-300 leading-relaxed">
+                Creating new accounts is disabled here. This deployment exists
+                only to demonstrate what the project looks like in action.
+              </p>
+              <p className="text-blue-700 dark:text-blue-300 leading-relaxed">
+                To get your own fully working instance, clone the repository,
+                connect a PostgreSQL database, and configure your environment
+                variables.
+              </p>
+              <a
+                href="https://github.com/ColdByDefault/ready-to-use-auth"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1.5 text-blue-800 dark:text-blue-300 font-medium underline-offset-4 hover:underline"
+              >
+                <ExternalLink className="size-3.5" />
+                View on GitHub
+              </a>
+            </div>
+          </div>
+        </div>
+
+        {/* Back to sign-in */}
+        <p className="text-muted-foreground text-center text-sm leading-relaxed">
+          Already have an account?{" "}
+          <Link
+            href="/sign-in"
+            className="text-foreground font-medium underline-offset-4 hover:underline"
+          >
+            Sign in with demo credentials
+          </Link>
+        </p>
+      </div>
+    );
   }
 
   // -------------------------------------------------------------------------

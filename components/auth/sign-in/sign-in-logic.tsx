@@ -71,8 +71,9 @@ export function SignInLogic({
   const successURL = callbackConfig?.callbackURL ?? "/dashboard";
   const errorURL = callbackConfig?.errorCallbackURL ?? "/sign-in";
 
-  // Merge provider overrides into the default list
+  // In demo mode, disable all social providers (they need the database)
   const providers = React.useMemo(() => {
+    if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") return [];
     if (!providerOverrides) return ENABLED_PROVIDERS;
     return ENABLED_PROVIDERS.map((p) => {
       const override = providerOverrides[p.id];
@@ -119,6 +120,34 @@ export function SignInLogic({
 
     setIsLoading(true);
     try {
+      // -----------------------------------------------------------------
+      // Demo / showcase mode — call the lightweight API route instead of
+      // Better Auth (no database involved).
+      // -----------------------------------------------------------------
+      if (process.env.NEXT_PUBLIC_DEMO_MODE === "true") {
+        const res = await fetch("/api/demo-signin", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: result.data.email,
+            password: result.data.password,
+          }),
+        });
+
+        if (!res.ok) {
+          setAuthError({
+            message: "Invalid demo credentials. Check the hint above.",
+          });
+          return;
+        }
+
+        router.push(successURL);
+        return;
+      }
+
+      // -----------------------------------------------------------------
+      // Normal mode — Better Auth
+      // -----------------------------------------------------------------
       const { error } = await authClient.signIn.email({
         email: result.data.email,
         password: result.data.password,
