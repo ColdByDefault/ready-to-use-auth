@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import { ShieldCheck, FlaskConical } from "lucide-react";
+import Image from "next/image";
+import { FlaskConical } from "lucide-react";
 import { SignIn } from "@/components/auth/sign-in";
 
 export const metadata: Metadata = {
@@ -31,9 +32,13 @@ export default function SignInPage() {
           href="/"
           className="mb-8 flex items-center justify-center gap-2 text-sm font-medium"
         >
-          <div className="bg-primary text-primary-foreground flex size-8 items-center justify-center rounded-lg">
-            <ShieldCheck className="size-4" />
-          </div>
+          <Image
+            src="/icon.svg"
+            alt="Logo"
+            width={32}
+            height={32}
+            className="dark:invert [.midnight-purple_&]:invert [.gray_&]:invert"
+          />
           <span className="sr-only">Back to home</span>
         </Link>
 

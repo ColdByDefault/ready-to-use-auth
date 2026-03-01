@@ -66,6 +66,8 @@ interface SignUpLogicProps {
   providerOverrides?: Partial<
     Record<SocialProvider, { enabled?: boolean; label?: string }>
   >;
+  /** Extra Tailwind classes forwarded to the outermost wrapper div of the form. */
+  className?: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -75,6 +77,7 @@ interface SignUpLogicProps {
 export function SignUpLogic({
   callbackConfig,
   providerOverrides,
+  className,
 }: SignUpLogicProps) {
   const router = useRouter();
 
@@ -256,6 +259,7 @@ export function SignUpLogic({
       onSubmit={handleSubmit}
       onSocialSignIn={handleSocialSignIn}
       socialLoadingProvider={socialLoadingProvider}
+      {...(className !== undefined && { className })}
     />
   );
 }

@@ -119,6 +119,7 @@ export function SignInFormUI({
   authError,
   isLoading,
   providers,
+  className,
   onFieldChange,
   onSubmit,
   onSocialSignIn,
@@ -130,7 +131,7 @@ export function SignInFormUI({
   const isAnyLoading = isLoading || socialLoadingProvider !== null;
 
   return (
-    <div className="flex w-full flex-col gap-6">
+    <div className={cn("flex w-full flex-col gap-6", className)}>
       {/* Header */}
       {/* OPTIMIZE: "Welcome back" and the subtitle are hardcoded. Accept a
           `labels` prop (e.g. `labels.title`, `labels.subtitle`) so consumers

@@ -14,12 +14,13 @@ Clone it, configure your DB and providers, and have a fully working auth layer i
 proxy.ts                       # Route protection — replaces middleware.ts in Next.js 16+
 
 app/
-  page.tsx                     # Landing page
+  page.tsx                     # Landing page   **Replaceable** — imports a single component from `components/landing-default/`
   sign-in/page.tsx             # Sign-in route — RSC wrapper
   sign-up/page.tsx             # Sign-up route — RSC wrapper
   dashboard/
     page.tsx                   # Protected page — RSC with server-side session check
   api/auth/[...all]/route.ts   # Better Auth catch-all handler
+  docs/page.tsx                # Docs page with instructions and code examples (removable)
 
 components/auth/
   providers.ts                 # All 10 OAuth providers — flip `enabled` to toggle
@@ -33,6 +34,10 @@ components/auth/
     sign-up-form.tsx           # Pure UI
     sign-up-logic.tsx          # Controller
     index.ts                   # Re-exports as <SignUp>
+  nav/
+    footer.tsx                 # Footer (add your own links or remove)
+    header.tsx                 # Header on auth pages (add logo, change copy, or remove)
+  ui/                          # Opttional Shadcn-based components (buttons, inputs, etc) used by the forms — replace or remove as you like
 
 lib/
   auth.ts                      # Server-side Better Auth instance
@@ -283,6 +288,7 @@ interface SignUpFormProps {
   authError: AuthError | null; // { message: string; code?: string }
   isLoading: boolean; // email form is submitting
   providers: ProviderConfig[]; // enabled providers to render
+  className?: string; // forwarded to the outermost wrapper div
   socialLoadingProvider: SocialProvider | null; // which social btn is loading
   onFieldChange: (field: keyof SignUpFormValues, value: string) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
@@ -299,6 +305,7 @@ interface SignInFormProps {
   authError: AuthError | null;
   isLoading: boolean;
   providers: ProviderConfig[];
+  className?: string; // forwarded to the outermost wrapper div
   socialLoadingProvider: SocialProvider | null;
   onFieldChange: (
     field: keyof SignInFormValues,
@@ -318,7 +325,7 @@ import { SignInFormUI } from "./my-sign-in-form"; // ← change this import
 
 Your new UI inherits all state, validation, loading states, and auth calls automatically.
 
-**Minimal example:**
+**Minimal example (includes `className`):**
 
 ```tsx
 import type { SignInFormProps } from "@/types/auth";
@@ -370,7 +377,59 @@ export function SignInFormUI({
 
 ---
 
-### 8. Dark Mode
+### 8. Style the Form Wrapper
+
+Both `<SignIn>` and `<SignUp>` accept an optional `className` prop that is forwarded directly to the outermost `div` of the form. Use it to add borders, shadows, padding, max-width constraints, or any other Tailwind utilities — without touching the form components.
+
+```tsx
+// Wrap the form in a card
+<SignIn className="rounded-xl border bg-card p-8 shadow-md" />
+
+// Constrain width on a wide layout
+<SignUp className="mx-auto w-full max-w-sm" />
+
+// Combine with a custom background
+<SignIn className="rounded-2xl bg-linear-to-b from-muted/40 to-muted/10 p-10" />
+```
+
+The classes are merged with the component's default `flex w-full flex-col gap-6`, so layout and spacing are preserved unless you explicitly override them.
+
+---
+
+### 9. Theme Presets
+
+The design tokens are defined as CSS custom properties in `app/globals.css`. Two ready-to-use alternative palettes are included at the bottom of the file as commented-out blocks — **Ocean Blue** and **Forest Green**. Each palette is a complete light + dark pair.
+
+To switch themes, replace the active `:root` and `.dark` blocks at the top of `globals.css` with the palette of your choice:
+
+```css
+/* In app/globals.css — replace the :root block with e.g. Ocean Blue: */
+:root {
+  --primary: oklch(0.488 0.243 264.376);
+  /* ... rest of the palette */
+}
+
+.dark {
+  --primary: oklch(0.6 0.2 264.376);
+  /* ... rest of the palette */
+}
+```
+
+The included palettes:
+
+| Name           | Hue   | Best for                                           |
+| -------------- | ----- | -------------------------------------------------- |
+| Default (warm) | ~49°  | General purpose, neutral warmth _(active)_         |
+| Ocean Blue     | ~264° | SaaS, developer tools, productivity apps           |
+| Forest Green   | ~155° | Wellness, sustainability, nature-oriented products |
+
+All three presets use the same token names, so every component — forms, buttons, inputs, alerts — picks up the new palette automatically. No component changes needed.
+
+To create your own palette, edit the CSS variable values in `:root` and `.dark`. The tokens follow the shadcn/ui convention so any shadcn palette generator produces a drop-in replacement.
+
+---
+
+### 10. Dark Mode
 
 Dark mode is active out of the box via `next-themes`. The `ThemeProvider` in `app/layout.tsx` uses `attribute="class"`. All components use Tailwind `dark:` variants. System theme is used by default.
 
@@ -392,7 +451,7 @@ export function ThemeToggle() {
 
 ---
 
-### 9. Landing Page
+### 11. Landing Page
 
 The default landing page lives entirely in `components/landing-default/`. The root route (`app/page.tsx`) is a thin wrapper that just imports it — making it trivial to replace.
 
@@ -422,7 +481,7 @@ To disable only the version badge while keeping the rest of the landing page, re
 
 ---
 
-### 10. Demo / Showcase Mode
+### 12. Demo / Showcase Mode
 
 The project includes a **demo mode** that lets you deploy it as a public showcase on Vercel (or anywhere) **without a database**. Visitors can sign in with hardcoded demo credentials and explore the dashboard, but cannot create real accounts.
 
