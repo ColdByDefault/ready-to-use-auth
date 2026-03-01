@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { VersionBadge } from "@/components/landing-default";
 
 // ── Shared prose primitives ────────────────────────────────────────────────────
 
@@ -61,15 +60,6 @@ export default function DocsPage() {
       {/* ── Top CTA banner ──────────────────────────────────────────────── */}
       <div className="border-b border-border bg-card/60 backdrop-blur-sm sticky top-0 z-50">
         <div className="mx-auto flex max-w-4xl items-center justify-between gap-4 px-6 py-3">
-          <div className="flex items-center gap-3">
-            <Link
-              href="/"
-              className="text-foreground font-bold text-sm hover:opacity-70 transition-opacity"
-            >
-              ready-to-use-auth
-            </Link>
-            <VersionBadge />
-          </div>
           <div className="flex items-center gap-2">
             <Button asChild variant="outline" size="sm">
               <Link href="/sign-in">Sign in</Link>
@@ -580,8 +570,112 @@ import { SignInFormUI } from "./my-sign-in-form"; // ← change this import`}</P
           calls automatically.
         </P>
 
-        {/* 8. Dark Mode */}
-        <H3>8. Dark Mode</H3>
+        {/* 8. Style the Form Wrapper */}
+        <H3>8. Style the Form Wrapper</H3>
+        <P>
+          Both <Code>&lt;SignIn&gt;</Code> and <Code>&lt;SignUp&gt;</Code>{" "}
+          accept an optional <Code>className</Code> prop that is forwarded
+          directly to the outermost <Code>div</Code> of the form. Use it to add
+          borders, shadows, padding, max-width constraints, or any other
+          Tailwind utilities — without touching the form components.
+        </P>
+        <Pre>{`// Wrap the form in a card
+<SignIn className="rounded-xl border bg-card p-8 shadow-md" />
+
+// Constrain width on a wide layout
+<SignUp className="mx-auto w-full max-w-sm" />
+
+// Combine with a custom background
+<SignIn className="rounded-2xl bg-linear-to-b from-muted/40 to-muted/10 p-10" />`}</Pre>
+        <P>
+          The classes are merged with the component&apos;s default{" "}
+          <Code>flex w-full flex-col gap-6</Code>, so layout and spacing are
+          preserved unless you explicitly override them.
+        </P>
+
+        {/* 9. Theme Presets */}
+        <H3>9. Theme Presets</H3>
+        <P>
+          The design tokens are defined as CSS custom properties in{" "}
+          <Code>app/globals.css</Code>. Two ready-to-use alternative palettes
+          are included at the bottom of that file as commented-out blocks —{" "}
+          <strong className="text-foreground">Ocean Blue</strong> and{" "}
+          <strong className="text-foreground">Forest Green</strong>. Each
+          palette is a complete light + dark pair.
+        </P>
+        <P>
+          To switch themes, replace the active <Code>:root</Code> and{" "}
+          <Code>.dark</Code> blocks at the top of <Code>globals.css</Code> with
+          the palette of your choice:
+        </P>
+        <Pre>{`/* In app/globals.css — replace the :root block: */
+:root {
+  --primary: oklch(0.488 0.243 264.376);
+  /* ... rest of Ocean Blue palette */
+}
+
+.dark {
+  --primary: oklch(0.6 0.2 264.376);
+  /* ... rest of Ocean Blue dark palette */
+}`}</Pre>
+        <div className="overflow-x-auto mb-4">
+          <table className="w-full text-sm border-collapse">
+            <thead>
+              <tr className="border-b border-border">
+                <th className="text-left text-foreground font-semibold py-2 pr-6">
+                  Name
+                </th>
+                <th className="text-left text-foreground font-semibold py-2 pr-6">
+                  Hue
+                </th>
+                <th className="text-left text-foreground font-semibold py-2">
+                  Best for
+                </th>
+              </tr>
+            </thead>
+            <tbody className="text-muted-foreground">
+              {[
+                [
+                  "Default (warm)",
+                  "~49°",
+                  "General purpose, neutral warmth (active)",
+                ],
+                [
+                  "Ocean Blue",
+                  "~264°",
+                  "SaaS, developer tools, productivity apps",
+                ],
+                [
+                  "Forest Green",
+                  "~155°",
+                  "Wellness, sustainability, nature products",
+                ],
+              ].map(([name, hue, use]) => (
+                <tr key={name} className="border-b border-border/40">
+                  <td className="py-1.5 pr-6 font-medium text-foreground">
+                    {name}
+                  </td>
+                  <td className="py-1.5 pr-6 font-mono text-xs">{hue}</td>
+                  <td className="py-1.5">{use}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <P>
+          All three presets use the same token names, so every component —
+          forms, buttons, inputs, alerts — picks up the new palette
+          automatically. No component changes needed.
+        </P>
+        <Note>
+          To create your own palette, edit the CSS variable values in{" "}
+          <Code>:root</Code> and <Code>.dark</Code>. The tokens follow the
+          shadcn/ui convention, so any shadcn palette generator produces a
+          drop-in replacement.
+        </Note>
+
+        {/* 10. Dark Mode */}
+        <H3>10. Dark Mode</H3>
         <P>
           Dark mode is active out of the box via <Code>next-themes</Code>. The{" "}
           <Code>ThemeProvider</Code> in <Code>app/layout.tsx</Code> uses{" "}
@@ -600,8 +694,8 @@ export function ThemeToggle() {
   );
 }`}</Pre>
 
-        {/* 9. Landing Page */}
-        <H3>9. Landing Page</H3>
+        {/* 11. Landing Page */}
+        <H3>11. Landing Page</H3>
         <P>
           The default landing page lives entirely in{" "}
           <Code>components/landing-default/</Code>. The root route (
@@ -621,8 +715,8 @@ export default function HomePage() {
           manual updates needed.
         </P>
 
-        {/* 10. Demo / Showcase Mode */}
-        <H3>10. Demo / Showcase Mode</H3>
+        {/* 12. Demo / Showcase Mode */}
+        <H3>12. Demo / Showcase Mode</H3>
         <P>
           The project includes a{" "}
           <strong className="text-foreground">demo mode</strong> that lets you

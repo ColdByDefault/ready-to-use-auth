@@ -96,6 +96,8 @@ export interface SignUpFormProps {
   authError: AuthError | null;
   isLoading: boolean;
   providers: ProviderConfig[];
+  /** Extra Tailwind classes applied to the outermost wrapper div. */
+  className?: string;
   onFieldChange: (field: keyof SignUpFormValues, value: string) => void;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   onSocialSignIn: (provider: SocialProvider) => void;
@@ -108,6 +110,8 @@ export interface SignInFormProps {
   authError: AuthError | null;
   isLoading: boolean;
   providers: ProviderConfig[];
+  /** Extra Tailwind classes applied to the outermost wrapper div. */
+  className?: string;
   onFieldChange: (
     field: keyof SignInFormValues,
     value: string | boolean,
