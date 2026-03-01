@@ -1,14 +1,19 @@
 import Link from "next/link";
-import { ShieldCheck } from "lucide-react";
+import Image from "next/image";
 import { VersionBadge } from "@/components/landing-default/version-badge";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 export function Header() {
   return (
     <header className="flex items-center justify-between px-6 py-2 sm:px-10">
       <div className="flex items-center gap-2">
-        <div className="bg-primary text-primary-foreground flex size-7 items-center justify-center rounded-lg">
-          <ShieldCheck className="size-4" />
-        </div>
+        <Image
+          src="/icon.svg"
+          alt="Logo"
+          width={28}
+          height={28}
+          className="dark:invert [.midnight-purple_&]:invert [.gray_&]:invert"
+        />
         <Link href="/">
           {" "}
           <span className="text-sm font-semibold tracking-tight">
@@ -16,7 +21,10 @@ export function Header() {
           </span>
         </Link>
       </div>
-      <VersionBadge />
+      <div className="flex items-center gap-2">
+        <VersionBadge />
+        <ThemeToggle />
+      </div>
     </header>
   );
 }

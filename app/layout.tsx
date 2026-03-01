@@ -8,23 +8,6 @@ export const metadata: Metadata = {
   title: "Auth — Better Auth Components",
   description:
     "Fully customizable, type-safe authentication components powered by Better Auth.",
-  icons: {
-    icon: [
-      {
-        url: "/icon-light-32x32.png",
-        media: "(prefers-color-scheme: light)",
-      },
-      {
-        url: "/icon-dark-32x32.png",
-        media: "(prefers-color-scheme: dark)",
-      },
-      {
-        url: "/icon.svg",
-        type: "image/svg+xml",
-      },
-    ],
-    apple: "/apple-icon.png",
-  },
 };
 
 export default function RootLayout({
@@ -39,6 +22,14 @@ export default function RootLayout({
           attribute="class"
           defaultTheme="system"
           enableSystem
+          themes={[
+            "light",
+            "dark",
+            "ocean-blue",
+            "forest-green",
+            "gray",
+            "midnight-purple",
+          ]}
           disableTransitionOnChange
         >
           <Header />
