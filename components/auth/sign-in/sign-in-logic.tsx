@@ -206,11 +206,11 @@ export function SignInLogic({
       authError={authError}
       isLoading={isLoading}
       providers={providers}
-      className={className}
       onFieldChange={handleFieldChange}
       onSubmit={handleSubmit}
       onSocialSignIn={handleSocialSignIn}
       socialLoadingProvider={socialLoadingProvider}
+      {...(className !== undefined && { className })}
     />
   );
 }
